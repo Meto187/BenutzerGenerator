@@ -1,4 +1,4 @@
-﻿USE [master]
+USE [master]
 GO
 /****** Object:  StoredProcedure [dbo].[Metin_BenutzerGenerator]    Script Date: 26.02.2021 12:21:39 ******/
 SET ANSI_NULLS ON
@@ -83,7 +83,7 @@ DECLARE @parERROR_PROCEDURE		varchar(max)
 DECLARE @parERROR_LINE			varchar(max)
 DECLARE @parERROR_MESSAGE		varchar(max)
 ----------------------------------------------*
--- axUSER    
+-- _USER    
 ----------------------------------------------*
 DECLARE @parUSERUSERId decimal(11,0)
 DECLARE @parUSERBenutzerKennung char(40)
@@ -150,7 +150,7 @@ IF @inUserId = 0
 END
 ---
 -----------------------------------------------------------------------------------------*
----- wir prüfen, ob es den Benutzer in axUSER gibt, und er nicht gelöscht ISt
+---- wir prüfen, ob es den Benutzer in _USER gibt, und er nicht gelöscht ISt
 -----------------------------------------------------------------------------------------*
 IF @flag = 0
 	BEGIN
@@ -339,7 +339,7 @@ BEGIN
 END
 ---
 -----------------------------------------------------------------------------------------*
----- INSERT Benutzer in axUSER
+---- INSERT Benutzer in _USER
 -----------------------------------------------------------------------------------------*	
 IF @flag = 0
 BEGIN
@@ -374,14 +374,14 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5060				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim insert zur axUSER tabelle ]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim insert zur _USER tabelle ]]'							+ '; '
 		---
 	END CATCH
 END		
 ---       
 -----------------------------------------------------------------------------------------*
---- Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in axZANSF2USER                                                              
---- hier die entsprechENDe AnschrIFten ID (axANSFId) aus axANSF eingeben
+--- Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _User2ANSF                                                              
+--- hier die entsprechENDe AnschrIFten ID (_AnschriftenId) aus _Anschriften eingeben
 -----------------------------------------------------------------------------------------*		
 IF @flag = 0
 BEGIN
@@ -414,14 +414,13 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5070				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in axZANSF2USER]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _User2ANSF]]'							+ '; '
 		---
 	END CATCH
 END	
 --
 -----------------------------------------------------------------------------------------*
--- Zuordnung von Benutzer zu Mandant in axZUSER2UGRP anlegen
--- Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in axZUSER2UGRP
+-- Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _USER2ANSF
 -----------------------------------------------------------------------------------------*	
 IF @flag = 0
 BEGIN
@@ -502,7 +501,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5080				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in axZUSER2UGRP]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _USER2UGRP]]'							+ '; '
 		---
 	END CATCH
 END	
@@ -514,7 +513,7 @@ IF	@flag = 0
 and @outResult = 0
 BEGIN
 	SET @outResult		= 10				-- Farbe grün
-	SET @outMeldung		= LTRIM(RTRIM(@outMeldung))		+ 'E R F O L G ! [axBR_ANSFPORTALZugangAnlegen planmäßig beENDet]' + '; '
+	SET @outMeldung		= LTRIM(RTRIM(@outMeldung))		+ 'E R F O L G ! [Metin_BenutzerGenerator planmäßig beENDet]' + '; '
 END
 ---
 Return(@flag)
