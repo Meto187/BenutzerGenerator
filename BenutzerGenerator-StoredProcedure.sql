@@ -120,13 +120,12 @@ Declare @parInName1 varchar (255)
 		,@parInLand char(80)
 		,@parInPLZ char(10)
 ----------------------------------------------*
-----------------------------------------------*
--- Ausführen von Stored Proceduren
-----------------------------------------------*
 
 -- ************************************************************************************************
--- BEGINn des Hauptteils
+--									BEGINn des Hauptteils
 -- ************************************************************************************************
+
+
 SET @flag = 0
 ----------------------------------------
 -- InitialISierung der Ausgabeparameter
@@ -135,72 +134,84 @@ SET @flag = 0
 SET @outInfo = ''
 SET @outMeldung = ''
 SET @outResult = 0
-----------------------------------------
---  Prüfung der Eingabeparameter
-----------------------------------´-----
---
-
 -----------------------------------------------------------------------------------------*
 ---- Default Werte für @inUserId
 -----------------------------------------------------------------------------------------*
----
 IF @inUserId = 0
 	BEGIN
-		SET @inUserId = 1
+	SET @inUserId = 1
 END
 ---
 -----------------------------------------------------------------------------------------*
 ---- wir prüfen, ob es den Benutzer in _USER gibt, und er nicht gelöscht ISt
 -----------------------------------------------------------------------------------------*
 IF @flag = 0
-	BEGIN
-		  SELECT 
-				@parUSERUSERId = USERId -- decimal(11,0)
-				,@parUSERBenutzerKennung = BenutzerKennung -- char(40)
-				,@parUSERPassWort = BenutzerKennung -- char(40)
-				,@parUSERBenutzerName = BenutzerName -- char(80)
-				,@parUSERUserMarkeErstellung = UserMarkeErstellung -- decimal(11,0)
-			FROM   [master].[dbo].[_USER]
-			WITH   (NOLOCK)
-			WHERE  USERId = @inUSERId
-			---
-			SELECT @SQL1ERR = @@ERROR, @ROWS1 = @@ROWCOUNT
-			---
-			IF @SQL1ERR <> 0
-			BEGIN
-				SET @flag = @flag + 1024
-				SET @outResult = 5024			-- Farbe rot
-				SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [SQLFehler bei ZugrIFf auf _USER]' + '; '
-			END
-			---
-			IF @ROWS1 < 1 
-			BEGIN
-			----------------------------------
-			--- wir haben keine Rows gefunden
-			----------------------------------
-				SET @flag = @flag + 1024
-				SET @outResult =  5025			-- Farbe rot
-				SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Benutzer nicht gefunden]' + '; '
-			END
-			---
-			IF @ROWS1 > 1 
-			BEGIN
-			----------------------------------
-			--- wir haben zuviele Rows gefunden
-			----------------------------------
-				
-				SET @flag = @flag + 1024
-				SET @outResult = 5028			-- Farbe rot
-				SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Benutzer mehrdeutig]' + '; '
-			END
-			---
-			IF @ROWS1 = 1
-			BEGIN
-				SET @flag = @flag + 1024
-				SET @outResult = 5029			-- Farbe rot
-				SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Benutzer ISt gelöscht]' + '; '
-			END
-			---
+BEGIN
+	BEGIN TRY
+		SELECT 
+			@parUSERUSERId = USERId -- decimal(11,0)
+			,@parUSERBenutzerKennung = BenutzerKennung -- char(40)
+			,@parUSERPassWort = BenutzerKennung -- char(40)
+			,@parUSERBenutzerName = BenutzerName -- char(80)
+			,@parUSERUserMarkeErstellung = UserMarkeErstellung -- decimal(11,0)
+		FROM   [master].[dbo].[_USER]
+		WITH   (NOLOCK)
+		WHERE  USERId = @inUSERId
+		---
+		SELECT @SQL1ERR = @@ERROR, @ROWS1 = @@ROWCOUNT
+		---
+		IF @SQL1ERR <> 0
+		BEGIN
+			SET @flag = @flag + 1024
+			SET @outResult = 5024			-- Farbe rot
+			SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [SQLFehler bei ZugrIFf auf _USER]' + '; '
+		END
+		---
+		IF @ROWS1 < 1 
+		BEGIN
+		----------------------------------
+		--- wir haben keine Rows gefunden
+		----------------------------------
+			SET @flag = @flag + 1024
+			SET @outResult =  5025			-- Farbe rot
+			SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Benutzer nicht gefunden]' + '; '
+		END
+		---
+		IF @ROWS1 > 1 
+		BEGIN
+		----------------------------------
+		--- wir haben zuviele Rows gefunden
+		----------------------------------
+			SET @flag = @flag + 1024
+			SET @outResult = 5028			-- Farbe rot
+			SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5025 [Benutzer mehrdeutig]' + '; '
+		END
+		---
+		IF @ROWS1 = 1
+		BEGIN
+			SET @flag = @flag + 1024
+			SET @outResult = 5029			-- Farbe rot
+			SET @outMeldung = LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5029 [Benutzer ISt gelöscht]' + '; '
+		END
+		---
+	END TRY
+	---
+	BEGIN CATCH
+		---
+		SELECT
+			@parERROR_NUMBER		= ERROR_NUMBER()				-- int
+			,@parERROR_SEVERITY		= ERROR_SEVERITY() 				-- int
+			,@parERROR_STATE		= ERROR_STATE() 				-- int
+			,@parERROR_PROCEDURE	= ERROR_PROCEDURE()				-- varchar(max)
+			,@parERROR_LINE			= ERROR_LINE() 					-- varchar(max)
+			,@parERROR_MESSAGE		= ERROR_MESSAGE()				-- varchar(max)
+		---
+		SET @flag				= @flag + 1024
+		Set @outResult			= 5030				-- Farbe rot
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5030 [Fehler bei der ZuweISung der Variablen]'							+ '; '
+		---
+	END CATCH
+		
 END
 -----------------------------------------------------------------------------------------*
 ---- Variablen Werte Zuweisen
@@ -271,7 +282,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5040				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler bei der ZuweISung der Variablen]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5040 [Fehler bei der ZuweISung der Variablen]'							+ '; '
 		---
 	END CATCH
 END
@@ -333,7 +344,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5050				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim prüfen ob der Benutzer vorhanden ISt]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5050 [Fehler beim prüfen ob der Benutzer vorhanden ISt]]'							+ '; '
 		---
 	END CATCH
 END
@@ -348,9 +359,7 @@ BEGIN
 		---
 		IF @RESULT = 0
 		BEGIN
-			PRINT 'Keine Übereinstimmung gefunden. Daten dürfen verwENDet werden.'
-			-------------------------------------------
-			PRINT '========================================================='     
+		---
 			INSERT INTO _USER(BenutzerKennung, PassWort, BenutzerName, UserEmail, UserTelefon)       
 			VALUES (@inBenutzerKennung, @inPassWort, @inBenutzerName,@inUserEMail,@inUserTelefon)                                                                                                                                                                                                                                                                                                                                                                                                                                  
 			---
@@ -374,7 +383,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5060				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim insert zur _USER tabelle ]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5060 [Fehler beim insert zur _USER tabelle ]]'							+ '; '
 		---
 	END CATCH
 END		
@@ -414,7 +423,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5070				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _User2ANSF]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5070 [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _User2ANSF]]'							+ '; '
 		---
 	END CATCH
 END	
@@ -501,7 +510,7 @@ BEGIN
 		---
 		SET @flag				= @flag + 1024
 		Set @outResult			= 5080				-- Farbe rot
-		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _USER2UGRP]]'							+ '; '
+		Set @outMeldung			= LTRIM(RTRIM(@outMeldung)) + 'A B B R U C H ! 5080 [Fehler beim Befehl zum anlegen der Zuordnung von AnschrIFt zu Benutzer in _USER2UGRP]]'							+ '; '
 		---
 	END CATCH
 END	
