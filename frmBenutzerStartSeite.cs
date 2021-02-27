@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BenutzerGenerator_MetinDereli
+namespace BenutzerGenerator_MetinDerelii
 {
     public partial class FrmBenutzerGenerator : Form
     {
